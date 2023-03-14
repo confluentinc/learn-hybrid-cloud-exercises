@@ -4,7 +4,7 @@ Confluent Replicator allows you to replicate topics from one Kafka cluster to an
 
 In this module, we'll take a look at how to configure Confluent Replicator.
 
-For this course, we'll be using the Docker image Confluent Platform all-in-one container to configure our local install of Apache Kafka. Think of this as your on-premise installation. For our second cluster, we'll be using Confluent Cloud. 
+For this module, we'll be using the Docker image Confluent Platform all-in-one container to configure our local install of Apache Kafka. Think of this as your on-premise installation. For our second cluster, we'll be using Confluent Cloud. 
 
 If you already have a sample cluster ready with data, feel free to skip **Step 1** and move on to **Step 2**. You can also skip **Step 2** if you followed along with the first hands-on in the course where we set up our Confluent Cloud account and cluster. 
 
