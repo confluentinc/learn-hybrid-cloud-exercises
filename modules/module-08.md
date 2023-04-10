@@ -6,6 +6,15 @@ To follow along, you'll need to have Docker installed. You'll also need to clone
 
 The first thing we'll do is start our Docker container. We will be using a Kafka instance that contains two zookeeper instances, two brokers, a connect cluster, and a schema registry instance. As of the writing of this course, the most recent version of Kafka is 3.3 and Confluent Platform 7.3.2. By the time you take this course, there might have been other releases that break or change how things work and function. If you can't figure out why something isn't working please reach out to us using the [Confluent Community Forum or Public Slack](https://www.confluent.io/community/ask-the-community/).
 
+Download or copy the [Docker Compose]() file for this course:
+
+curl --silent --output docker-compose.yml \
+https:
+
+Navigate into the module-08 folder
+
+`cd module-08`
+
 After you have cloned the GitHub repo start the cluster by typing: 
 
 `docker-compose up -d`
