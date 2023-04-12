@@ -1,82 +1,105 @@
-# Hands-on: Configuring Cluster Linking
+# Hands-on: Configuring MirrorMaker 2
 
-Cluster Linking enables you to directly connect clusters and mirror topics from one cluster to another. Cluster Linking makes it easy to build multi-datacenter, multi-region, and hybrid cloud deployments. It is secure, performant, tolerant of network latency, and built into Confluent Server and Confluent Cloud.
+In this hands-on, we'll look at configuring MirrorMaker 2 and replicating data from one cluster to another. 
 
-In this hands-on, we'll configure Cluster Linking between two cloud clusters located in different regions and on different cloud providers, Amazon AWS and Google Cloud. 
+To follow along, you'll need to have Docker installed. You'll also need to clone the GitHub repo for this course. 
 
-Since we'll be using Confluent Cloud to perform this hands-on, make sure that you've gone through the first hands-on in the course, or that you have an account that allows you to set up and manage environments. For our source cluster you can you use any cluster type, Basic, Standard, or Dedicated. However, for the destination cluster, you will need to have a Dedicated instance.
+The first thing we'll do is start our Docker container. We will be using a Kafka instance that contains two zookeeper instances, two brokers, a connect cluster, and a schema registry instance. As of the writing of this course, the most recent version of Kafka is 3.3 and Confluent Platform 7.3.2. By the time you take this course, there might have been other releases that break or change how things work and function. If you can't figure out why something isn't working please reach out to us using the [Confluent Community Forum or Public Slack](https://www.confluent.io/community/ask-the-community/).
 
-## Set up Confluent Cloud
+Download or copy the [Docker Compose]() file for this course:
 
-1. The first step is making sure that you have an Environment set up on Confluent Cloud that you can use for this hands-on. You'll want to create one using the Essentials Stream Governance Package on AWS near where you are located. I'll name mine `ClusterLinking`. 
-2. Next, create a Cluster by clicking Create cluster on my own
-   ![New Cluster on my own](../images/ClusterLinking_new.png)
+```
+curl --silent --output docker-compose.yml \
+https://github.com/confluentinc/learn-hybrid-cloud-exercises/blob/master/module-08/docker-compose.yml
+```
 
-3. Select Begin Configuration for a Basic cluster.
-4. Select where you want your cluster to be located. I'm going to select Google Cloud, Las Vegas, with a single zone of availability. 
-   ![Basic Google Cloud Cluster](../images/Basic_GC_cluster.png)
+Navigate into the module-08 folder
 
-4. Since this will be my source cluster, I'll use a name that makes following this hands-on easy. `Orders_USWest_Source`. You will most likely already have a naming convention you'd like to follow or clusters that have already been named.  
-   ![Source Summary](../images/Source_summary.png)
+`cd module-08`
 
-5. Click Launch Cluster
-6. Since we will need another cluster to set up Cluster Linking, navigate back out into your environment and add a new cluster.
-7. As mentioned above, this one needs to be a Dedicated cluster.
-8. This time I'll select AWS, North Virginia, with a single zone for my availability.
-   ![Destination AWS](../images/Destination_AWS.png)
+After you have cloned the GitHub repo start the cluster by typing: 
 
-9. Select Internet and then Continue.
-10. Select Automatic and then Continue.
-11. Name your new cluster. Similar to our source, I'll name this one `Orders_USEast_Destination`. Again, you'll want to name it something that fits in with your set up and naming convention.
-12. Review the summary and click Launce cluster.
-    ![Destination Summary](../images/Destination_summary.png)
+`docker-compose up -d`
+
+The first time this runs it will take a while as it is downloading all the necessary files. Once it is done make sure that everything is running by typing:
+
+`docker-compose ps`
+
+We need some topics and data in the Kafka instance, to create it, enter into broker’s container from a new terminal tab or window and execute the kafka-topics command:
+
+`docker exec -it broker /bin/bash`
+
+Create the topic:
+
+`kafka-topics --create --topic replicate_me --bootstrap-server broker:29092`
+
+Now let's create some messages that we can have replicated:
+
+`while [[ true ]]; do echo "$RANDOM" |  kafka-console-producer --topic replicate_me --bootstrap-server broker:29092; sleep 1; done &`
+
+Next, we'll enter the Kafka Connect Docker container to run our commands
+
+`docker exec -it connect /bin/bash`
+
+To create a connector you'll want to take a look at the [official Kafka Connect documentation](https://docs.confluent.io/platform/current/connect/userguide.html). For this example, we'll just use the /connectors endpoint.
+
+Create a new connector using the JSON format. 
+
+`cat > connectors.json`
+
+```
+{
+  "name":"test_mirror",
+  "config": {
+    "connector.class": "org.apache.kafka.connect.mirror.MirrorSourceConnector",
+    "name":"test_mirror",
+    "source.cluster.alias":"source",
+    "topics":"replicate_me",
+    "source.cluster.bootstrap.servers":"broker:29092",
+    "target.cluster.bootstrap.servers":"broker2:29093",
+    "producer.override.bootstrap.servers":"broker2:29093",
+    "offset-syncs.topic.replication.factor":"1"
+  }
+}
+```
+
+Hit `Enter` and then `Ctrl-C`
+
+Now let's start our mirroring by performing the `POST` command to create our new connector:
+
+`cat connectors.json | curl -X POST -H 'Content-Type: application/json' localhost:8083/connectors --data-binary @-`
+
+You can verify that the new connector has been created:
+
+`curl localhost:8083/connectors`
+
+Open up a new terminal and connect to broker2:
+
+`docker exec -it broker2 /bin/bash`
+
+Let's look at the topics:
+
+`kafka-topics --list --bootstrap-server broker2:29093`
+
+You'll see our new topic source `source.replicate_me`
+
+Finally, let's take a look at the messages that are being replicated. First go back to the terminal window that is connected to our first broker and enter the following command:
+
+`kafka-console-consumer --topic replicate_me --bootstrap-server broker:29092`
+
+Then place the broker2 terminal window next to that and run this command:
+
+`kafka-console-consumer --topic source.replicate_me --bootstrap-server broker2:29093`
+
+As you can see the two brokers have the same messages being replicated to each one. 
+
+As we talked about in the MirrorMaker2 module, if you plan on having data replicated from one cluster to another you only need one Kafka Connect cluster configured for Active/Passive and Aggregation assuming you are only working with two clusters. However, for all other scenarios, Active/Active, Fan-out, Forwarding, and more than two Active/Passive or Aggregation clusters, you will need to configure a separate Kafka Connect instance for each target cluster. Or, said another way, for each target you will need a Kafka Connect instance. For this reason, it can be difficult to scale MirrorMaker2.
 
 
-While we wait for the dedicated cluster to be created, let's get the data flowing into our source cluster.
 
-13. Click on the `Orders_USWest_Source` cluster and navigate into Connectors on the left of the screen. 
-14. Select the Datagen Source connector.
-15. Click Add a new topic.
-16. Pick a name and set up the number of partitions you'd like. In this case, I'll name the topic `Orders_West` with 3 partitions. 
-    ![Orders West topic](../images/Orders_west.png)
 
-17. Click Create with defaults
-18. Select the topic we just created and click Continue.
-    ![Datagen select topic](../images/Datagen_source.png)
 
-19. Select Global access and click Generate API key & download.
-20. Give the API key a description and click Continue.
-21. Select Avro and the Orders dataset and click Continue.
-22. Leave the Connector sizing at 1 and click Continue.
-23. Name the Datagen Connector, or accept the default name and click Continue.
-24. Once the Datagen connector has been provisioned you can go into your Topics, `Orders_West` topic, and click on Messages to see the data flowing in. 
 
-We now have two clusters, one Basic that will serve as our source cluster that has our topic and data flowing in, and one Dedicated that will be our destination cluster. 
 
-We'll now set up our Cluster Link from the source to the Destination cluster.
 
-25.  Make sure your Dedicated cluster is provisioned before starting the next step. Go to your  ClusterLinking Environment and it should look similar to the image below. You should be able to see that your source cluster has data flowing through it, but the destination cluster does not as we haven't configured anything yet. 
-    ![ClusterLinking Environment](../images/Environment_overview.png)
 
-26. Let's create the cluster link by clicking on the Cluster Link menu on the left of the screen.
-27. Click Create cluster link
-28. This screen allows you to configure three types of links, in your own organization, in another organization, or from either Confluent Platform or Apache Kafka. We will select Confluent Cloud, our ClusterLinking Environment, and the source, `Orders_USWest_Source`. We will also provide this cluster link with read-all access. You could also configure specific access if need be by selecting Granular access.
-    ![ClusterLinking Source](../images/Clusterlink_source.png)
-
-29. Click Continue
-30. Now we will select our destination environment and cluster.
-    ![ClusterLinking Destination](../images/Clusterlink_destination.png)
-
-31. Click Continue
-32. There are a few different configuration options that need to be selected. In this case, I want the Cluster Link to auto-create mirror topics, add a prefix to my mirror topic and sync my consumer offsets as well.
-    ![ClusterLinking Configurations](../images/Clusterlink_configs.png)
-
-33. Click Continue.
-34. Name the Cluster Link, in this case I'll name it `Orders_USWest-East`
-35. Click Launch cluster link.
-36. Now we have to set up which topics we want to be mirrored. Click Add mirror topic.
-37. Select `Orders_West` from the dropdown and click Add.
-38. You can now navigate to your Destination cluster and see the newly created mirror topic with all the messages coming in.
-39. Congratulations! You have successfully set up a Cluster Link.
-
-In the next module, we'll extend our cluster link to working with international locations and creating a global hybrid architecture. 

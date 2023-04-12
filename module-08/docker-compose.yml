@@ -41,8 +41,8 @@ services:
       CONFLUENT_SUPPORT_CUSTOMER_ID: 'anonymous'
 
   zookeeper2:
-      image: confluentinc/cp-zookeeper:7.3.2zookeeper2
-      hostname: 
+      image: confluentinc/cp-zookeeper:7.3.2
+      hostname: zookeeper2
       container_name: zookeeper2
       ports:
         - "2182:2182"
