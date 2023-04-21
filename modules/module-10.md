@@ -10,12 +10,12 @@ Download or copy the [Docker Compose]() file for this course:
 
 ```
 curl --silent --output docker-compose.yml \
-https://github.com/confluentinc/learn-hybrid-cloud-exercises/blob/master/module-08/docker-compose.yml
+https://github.com/confluentinc/learn-hybrid-cloud-exercises/blob/master/module-10/docker-compose.yml
 ```
 
 Navigate into the module-08 folder
 
-`cd module-08`
+`cd module-10`
 
 After you have cloned the GitHub repo start the cluster by typing: 
 
