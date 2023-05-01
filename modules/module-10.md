@@ -1,19 +1,20 @@
-# Hands-on: Configuring MirrorMaker 2
+# Configuring MirrorMaker 2 - Hands-on
 
 In this hands-on, we'll look at configuring MirrorMaker 2 and replicating data from one cluster to another. 
 
-To follow along, you'll need to have Docker installed. You'll also need to clone the GitHub repo for this course. 
+To follow along, you'll need to have Docker installed. You'll also need to clone the GitHub repo for this course, [Learn Hybrid Cloud Exercises](https://github.com/confluentinc/learn-hybrid-cloud-exercises). 
+
 
 The first thing we'll do is start our Docker container. We will be using a Kafka instance that contains two zookeeper instances, two brokers, a connect cluster, and a schema registry instance. As of the writing of this course, the most recent version of Kafka is 3.3 and Confluent Platform 7.3.2. By the time you take this course, there might have been other releases that break or change how things work and function. If you can't figure out why something isn't working please reach out to us using the [Confluent Community Forum or Public Slack](https://www.confluent.io/community/ask-the-community/).
 
-Download or copy the [Docker Compose]() file for this course:
+Download or copy the [Docker Compose](https://github.com/confluentinc/learn-hybrid-cloud-exercises/tree/master/modules/module-10-files) file for this course:
 
 ```
 curl --silent --output docker-compose.yml \
-https://github.com/confluentinc/learn-hybrid-cloud-exercises/blob/master/module-10/docker-compose.yml
+https://github.com/confluentinc/learn-hybrid-cloud-exercises/tree/master/modules/module-10-files/docker-compose.yml
 ```
 
-Navigate into the module-08 folder
+Navigate into the module-10 folder
 
 `cd module-10`
 
@@ -25,7 +26,7 @@ The first time this runs it will take a while as it is downloading all the neces
 
 `docker-compose ps`
 
-We need some topics and data in the Kafka instance, to create it, enter into broker’s container from a new terminal tab or window and execute the kafka-topics command:
+We need some topics and data in the Kafka instance, to create it, enter into broker container from a new terminal tab or window and execute the kafka-topics command:
 
 `docker exec -it broker /bin/bash`
 
@@ -83,7 +84,7 @@ Let's look at the topics:
 
 You'll see our new topic source `source.replicate_me`
 
-Finally, let's take a look at the messages that are being replicated. First go back to the terminal window that is connected to our first broker and enter the following command:
+Finally, let's take a look at the messages that are being replicated. First, go back to the terminal window that is connected to our first broker and enter the following command:
 
 `kafka-console-consumer --topic replicate_me --bootstrap-server broker:29092`
 
@@ -94,12 +95,6 @@ Then place the broker2 terminal window next to that and run this command:
 As you can see the two brokers have the same messages being replicated to each one. 
 
 As we talked about in the MirrorMaker2 module, if you plan on having data replicated from one cluster to another you only need one Kafka Connect cluster configured for Active/Passive and Aggregation assuming you are only working with two clusters. However, for all other scenarios, Active/Active, Fan-out, Forwarding, and more than two Active/Passive or Aggregation clusters, you will need to configure a separate Kafka Connect instance for each target cluster. Or, said another way, for each target you will need a Kafka Connect instance. For this reason, it can be difficult to scale MirrorMaker2.
+## Resources
 
-
-
-
-
-
-
-
-
+[MirrorMaker 2 Documentation](https://kafka.apache.org/documentation/#georeplication)
