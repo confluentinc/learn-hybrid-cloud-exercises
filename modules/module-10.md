@@ -14,9 +14,9 @@ curl --silent --output docker-compose.yml \
 https://github.com/confluentinc/learn-hybrid-cloud-exercises/tree/master/modules/module-10-files/docker-compose.yml
 ```
 
-Navigate into the module-10 folder
+You can also use Gitpod to run this exercise by clicking on the button below:
 
-`cd module-10`
+[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/confluentinc/learn-hybrid-cloud-exercises.git)
 
 After you have cloned the GitHub repo start the cluster by typing: 
 
@@ -38,7 +38,7 @@ Now let's create some messages that we can have replicated:
 
 `while [[ true ]]; do echo "$RANDOM" |  kafka-console-producer --topic replicate_me --bootstrap-server broker:29092; sleep 1; done &`
 
-Next, we'll enter the Kafka Connect Docker container to run our commands
+Next, we'll enter the Kafka Connect Docker container to run our commands. Open up a new terminal tab or window:
 
 `docker exec -it connect /bin/bash`
 
