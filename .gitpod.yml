@@ -1,0 +1,17 @@
+image: 
+  file: /modules/module-10-files/docker-compose.yml
+
+workspaceLocation: /workspace/learn-hybrid-cloud-exercises/modules
+
+# Commands that will run on workspace start
+tasks:
+  - name: Start Docker 
+    command: docker-compose up -d
+
+# Ports to expose on workspace startup
+ports:
+  - port: 8081
+    onOpen: ignore
+
+
+

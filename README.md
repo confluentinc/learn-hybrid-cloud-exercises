@@ -5,3 +5,7 @@ This repository is for the [**Hybrid and Multi-Cloud Architecture**](https://) c
 To get the full experience, we recommend you follow along with the course on [Confluent Developer](https://developer.confluent.io). 
 
 If you can't figure out why something isn't working please reach out to us using the [Confluent Community Forum or Public Slack](https://www.confluent.io/community/ask-the-community/).
+
+If you would like to complete Module 10 in Gitpod, follow this link:
+
+https://gitpod.io/#https://github.com/confluentinc/learn-hybrid-cloud-exercises.git
