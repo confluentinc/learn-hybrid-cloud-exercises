@@ -8,4 +8,4 @@ If you can't figure out why something isn't working please reach out to us using
 
 If you would like to complete Module 10 in Gitpod, follow this link:
 
-https://gitpod.io/#https://github.com/confluentinc/learn-hybrid-cloud-exercises.git
+[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/confluentinc/learn-hybrid-cloud-exercises.git)
