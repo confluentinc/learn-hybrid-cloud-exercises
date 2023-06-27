@@ -1,5 +1,5 @@
 image: 
-  file: /modules/module-10-files/docker-compose.yml
+  file: workspace/modules/module-10-files/docker-compose.yml
 
 workspaceLocation: /workspace/learn-hybrid-cloud-exercises/modules
 
