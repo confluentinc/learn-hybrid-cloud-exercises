@@ -1,5 +1,5 @@
 image: 
-  file: /workspace/learn-hybrid-cloud-exercises/modules/module-10-files/docker-compose.yml
+  file: .gitpod.Dockerfile
 
 workspaceLocation: /workspace/learn-hybrid-cloud-exercises/modules
 
