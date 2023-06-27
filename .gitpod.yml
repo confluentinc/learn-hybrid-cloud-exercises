@@ -1,10 +1,12 @@
-image: 
-  file: .gitpod.Dockerfile
+image: gitpod/workspace-full
 
 workspaceLocation: /workspace/learn-hybrid-cloud-exercises/modules
 
 # Commands that will run on workspace start
 tasks:
+  - name: Change to working directory
+    command: cd module-10-files
+    
   - name: Start Docker 
     command: docker-compose up -d
 
