@@ -18,7 +18,7 @@ You can also use Gitpod to run this exercise by clicking on the button below:
 
 [![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/confluentinc/learn-hybrid-cloud-exercises.git)
 
-After you have cloned the GitHub repo start the cluster by typing: 
+After you have cloned the GitHub repo start the cluster by typing (this step is done for you if you are using Gitpod): 
 
 `docker-compose up -d`
 
