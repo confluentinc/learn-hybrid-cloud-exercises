@@ -7,20 +7,24 @@ To follow along, you'll need to have Docker installed. You'll also need to clone
 
 The first thing we'll do is start our Docker container. We will be using a Kafka instance that contains two zookeeper instances, two brokers, a connect cluster, and a schema registry instance. As of the writing of this course, the most recent version of Kafka is 3.4 and Confluent Platform 7.4.0. By the time you take this course, there might have been other releases that break or change how things work and function. If you can't figure out why something isn't working please reach out to us using the [Confluent Community Forum or Public Slack](https://www.confluent.io/community/ask-the-community/).
 
-Download or copy the [Docker Compose](https://github.com/confluentinc/learn-hybrid-cloud-exercises/tree/master/modules/module-10-files) file for this course:
+There are two ways to follow along with this exercise, either locally using a Docker file, or in Gitpod. 
+
+**Locally using Docker**: Download or copy the [Docker Compose](https://github.com/confluentinc/learn-hybrid-cloud-exercises/tree/master/modules/module-10-files) file for this course:
 
 ```
 curl --silent --output docker-compose.yml \
 https://github.com/confluentinc/learn-hybrid-cloud-exercises/tree/master/modules/module-10-files/docker-compose.yml
 ```
 
-You can also use Gitpod to run this exercise by clicking on the button below:
-
-[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/confluentinc/learn-hybrid-cloud-exercises.git)
-
 After you have cloned the GitHub repo start the cluster by typing (this step is done for you if you are using Gitpod): 
 
 `docker-compose up -d`
+
+**Using Gitpod:**
+
+[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/confluentinc/learn-hybrid-cloud-exercises.git)
+
+The rest of the instructions are the same whether you are using the local Docker file or Gitpod.
 
 The first time this runs it will take a while as it is downloading all the necessary files. Once it is done make sure that everything is running by typing:
 
